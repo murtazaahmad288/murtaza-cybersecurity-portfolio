@@ -51,6 +51,8 @@ This project presents an internal security audit, compliance assessment, and ris
   * **Security Training:** Conduct routine security awareness training for all staff focusing on phishing, data handling, and password hygiene.
   * **Disaster Recovery (DR) & Business Continuity:** Formulate and test a formal Disaster Recovery Plan to maintain operational continuity and minimize downtime during security incidents.
 
+
+
 # Cybersecurity Incident Report: DNS Resolution Failure
 
 ## Project Overview
