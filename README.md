@@ -50,3 +50,66 @@ This project presents an internal security audit, compliance assessment, and ris
   * **Password Policy & Manager:** Deploy an enterprise password manager and enforce strict password policy guidelines (e.g., length, multi-factor authentication).
   * **Security Training:** Conduct routine security awareness training for all staff focusing on phishing, data handling, and password hygiene.
   * **Disaster Recovery (DR) & Business Continuity:** Formulate and test a formal Disaster Recovery Plan to maintain operational continuity and minimize downtime during security incidents.
+
+# Cybersecurity Incident Report: DNS Resolution Failure
+
+## Project Overview
+
+* **Project Title:** Network Traffic & Incident Analysis (DNS/ICMP Failure)
+* **Role:** Cybersecurity Analyst
+* **Core Skills & Focus:** Network Protocol Analysis, Packet Inspection, Incident Diagnosis, Root Cause Identification, Incident Response Reporting.
+* **Tools Used:** `tcpdump`, Packet Capture Analysis, Linux Command Line utilities (`systemctl`, `journalctl`, `iptables`, `dig`).
+
+### Executive Summary
+This project analyzes a simulated network incident involving service disruption for the client web domain `www.yummyrecipesforme.com`. When users were unable to load the site, packet capture data was gathered using `tcpdump` to inspect traffic between the client host and the authoritative DNS server. 
+
+Through analysis of UDP and ICMP packet interactions, the root issue was pinpointed to a failure at the transport/application layer: DNS resolution queries on port 53 were failing due to the target host actively returning ICMP "Port Unreachable" responses. This report documents the technical findings, packet-level data interpretation, suspected root causes, and recommended containment and remediation procedures for engineering teams.
+
+---
+
+## Section 1: Summary of the Problem (tcpdump Log Analysis)
+
+### Protocols Identified
+* **UDP** (User Datagram Protocol)
+* **DNS** (Domain Name System)
+* **ICMP** (Internet Control Message Protocol)
+
+### Summary of Traffic
+* **Outgoing Traffic:** The host machine (`192.51.100.15`) sent an initial outgoing DNS request via **UDP** to port `53` of the destination DNS server (`203.0.113.2.domain`) to resolve the domain `www.yummyrecipesforme.com`.
+* **Incoming Traffic:** In response to the UDP packet, the DNS server returned an **ICMP** error packet back to the host machine containing the message: `udp port 53 unreachable`.
+
+### Key Log Details & Interpretation
+| Attribute | Detail / Value |
+| :--- | :--- |
+| **Timestamp** | `13:24:32.192571` (1:24 PM) |
+| **Source IP** | `192.51.100.15` (Host Machine) |
+| **Destination IP** | `203.0.113.2` (DNS Server) |
+| **Destination Port** | Port `53` (DNS Service) |
+| **Query ID & Flags** | `35084` (`A?` record request mapping domain to IPv4) |
+| **Error Returned** | ICMP `destination port unreachable` (`udp port 53 unreachable`) |
+
+* **Log Trend:** The log demonstrates three consecutive UDP attempts from the browser to the DNS server, all resulting in identical ICMP unreachable error responses.
+* **Impacted Service:** **DNS Service (Port 53 / UDP)**. Because DNS resolution failed, the client browser was unable to obtain the IP address required to initiate an HTTPS connection to display `www.yummyrecipesforme.com`.
+
+---
+
+## Section 2: Analysis of the Data and Next Steps
+
+### Overview & Initial Reporting
+* **Time First Reported:** 1:24 PM (`13:24:32.192571`)
+* **Scenario & Reported Symptoms:** Multiple client customers reported being unable to access `www.yummyrecipesforme.com`, encountering a `destination port unreachable` error after extended loading times. The issue was reproduced upon investigation and confirmed via `tcpdump` packet capture.
+* **Current Status:** Escalate to security engineers for system-level troubleshooting and service restoration.
+
+### Investigation Findings
+The capture of ICMP Type 3 / Code 3 (`Destination Unreachable - Port Unreachable`) error messages confirms that the network pathway to host `203.0.113.2` is open, but **no active process is listening on UDP port 53** on the target server.
+
+### Suspected Root Cause
+1. **DNS Daemon Failure:** The primary DNS service daemon (e.g., `bind9`, `named`, `unbound`) on server `203.0.113.2` crashed or was stopped unexpectedly.
+2. **Firewall / Security Rules:** A recent firewall rule update (host-based `iptables`/`ufw` or network-level ACL) is dropping/rejecting incoming traffic on UDP port 53.
+3. **Denial of Service (DoS):** Resource exhaustion from excessive queries caused the DNS daemon to crash.
+
+### Recommended Next Steps
+- [ ] **1. Inspect DNS Daemon Status:** SSH into target server `203.0.113.2` and inspect process status (`systemctl status named` or `systemctl status bind9`).
+- [ ] **2. Restart Service & Analyze Logs:** Restart the DNS service if inactive and review system logs (`/var/log/syslog` or `journalctl -u bind9`) for crash origins.
+- [ ] **3. Validate Firewall Rules:** Check active host rules (`sudo iptables -L -n -v`) to confirm UDP port 53 is open to incoming requests.
+- [ ] **4. Test Resolution:** Perform verification testing using `dig @203.0.113.2 www.yummyrecipesforme.com` to confirm A record query resolution.
