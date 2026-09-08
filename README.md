@@ -115,3 +115,45 @@ The capture of ICMP Type 3 / Code 3 (`Destination Unreachable - Port Unreachable
 - [ ] **2. Restart Service & Analyze Logs:** Restart the DNS service if inactive and review system logs (`/var/log/syslog` or `journalctl -u bind9`) for crash origins.
 - [ ] **3. Validate Firewall Rules:** Check active host rules (`sudo iptables -L -n -v`) to confirm UDP port 53 is open to incoming requests.
 - [ ] **4. Test Resolution:** Perform verification testing using `dig @203.0.113.2 www.yummyrecipesforme.com` to confirm A record query resolution.
+
+
+
+# Cybersecurity Incident Report: SYN Flood Attack
+
+## Project Description
+This project is an investigation and incident response analysis for a network intrusion scenario affecting a travel agency's web infrastructure. As a Security Analyst, I analyzed network traffic logs to diagnose a web server connection timeout, identified an active **SYN Flood (Denial of Service)** attack exploiting the TCP three-way handshake, implemented short-term containment measures, and developed a long-term technical mitigation strategy to secure the organization's network against future attacks.
+
+---
+
+## 1. Incident Overview
+
+| Metric | Details |
+| :--- | :--- |
+| **Incident Type** | Denial of Service (DoS) / SYN Flood |
+| **Target System** | Company Web Server |
+| **Impact Level** | High (Service Interruption) |
+| **Status** | Mitigated (Temporary) / Pending Long-term Safeguards |
+
+---
+
+## 2. Attack Identification & Evidence
+
+### Type of Attack
+**SYN Flood Attack**
+
+### Identification Justification
+An automated alert flagged web server unresponsiveness, leading to connection timeout errors for end users. Packet capture analysis via Wireshark revealed an abnormal volume of TCP SYN requests originating from a single unrecognized IP address.
+
+#### Observed Traffic Pattern:
+1. **Initiation:** The external host generates an overwhelming rate of TCP requests with the `SYN` flag enabled.
+2. **Allocation:** The web server allocates resources to track the connection state and responds with a `SYN-ACK`.
+3. **Incompletion:** The external host intentionally omits the final `ACK` required to finalize the TCP three-way handshake.
+
+This fills the server's backlog queue with half-open connections, causing resource exhaustion and preventing legitimate inbound connections.
+
+---
+
+## 3. Incident Analysis & Impact Assessment
+
+### Technical Mechanism
+A SYN flood exploits the standard TCP three-way handshake:
