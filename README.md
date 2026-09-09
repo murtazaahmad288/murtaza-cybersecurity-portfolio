@@ -51,7 +51,7 @@ This project presents an internal security audit, compliance assessment, and ris
   * **Security Training:** Conduct routine security awareness training for all staff focusing on phishing, data handling, and password hygiene.
   * **Disaster Recovery (DR) & Business Continuity:** Formulate and test a formal Disaster Recovery Plan to maintain operational continuity and minimize downtime during security incidents.
 
-
+---------------------------------------------------------------------------------------------------------------------------
 
 # Cybersecurity Incident Report: DNS Resolution Failure
 
@@ -115,3 +115,4 @@ The capture of ICMP Type 3 / Code 3 (`Destination Unreachable - Port Unreachable
 - [ ] **2. Restart Service & Analyze Logs:** Restart the DNS service if inactive and review system logs (`/var/log/syslog` or `journalctl -u bind9`) for crash origins.
 - [ ] **3. Validate Firewall Rules:** Check active host rules (`sudo iptables -L -n -v`) to confirm UDP port 53 is open to incoming requests.
 - [ ] **4. Test Resolution:** Perform verification testing using `dig @203.0.113.2 www.yummyrecipesforme.com` to confirm A record query resolution.
+---------------------------------------------------------------------------------------------------------------------------
