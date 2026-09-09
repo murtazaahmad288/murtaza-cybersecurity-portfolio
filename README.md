@@ -173,3 +173,80 @@ To address these vulnerabilities and establish baseline security practices, the 
 * **Effectiveness:** Configuring firewall Access Control Lists (ACLs) with an explicit "Default Deny" posture ensures that all inbound and outbound traffic is blocked unless explicitly permitted by business requirements. Inspecting traffic at the perimeter prevents unauthorized external connections and stops infected internal machines from exfiltrating customer data.
 * **Frequency:** **Initial setup with regular quarterly reviews.** Firewall rule sets must be audited quarterly to eliminate stale rules and update configurations as network requirements evolve.
 ___________________________________________________________________________________________________________________________
+
+
+# Incident Report Analysis: ICMP Flood Denial of Service (DoS) Attack
+
+## Project Description
+This project documents an incident response analysis and security plan for a multimedia company following an ICMP Flood Denial of Service (DoS) attack. Using the National Institute of Standards and Technology Cybersecurity Framework (NIST CSF)—**Identify, Protect, Detect, Respond, and Recover**—this report details the attack root cause, technical mitigations implemented, and an actionable response and recovery roadmap for future cybersecurity incidents.
+
+---
+
+## Executive Summary
+An incoming flood of ICMP packets (ping requests) targeted an unconfigured perimeter firewall, causing a Denial of Service (DoS) attack that brought down the internal network for two hours. The sudden spike in traffic exhausted server resources and prevented internal employees from accessing critical network files, web design tools, and marketing platforms. The response team mitigated the issue by blocking incoming ICMP traffic, taking non-critical systems offline, and safely restoring core network services.
+
+---
+
+## NIST CSF Analysis & Security Strategy
+
+### 1. Identify
+* **Attack Type:** ICMP Flood Attack (Denial of Service / DoS).
+* **Vulnerability:** Unconfigured perimeter firewall lacking ICMP packet filtering rules.
+* **Targeted/Affected Systems:** Company perimeter firewall, internal core network infrastructure, and employee workstations dependent on network resources.
+* **Operational Impact:** Two hours of total internal network downtime, halting business operations and customer support services.
+
+---
+
+### 2. Protect
+To prevent similar DoS attacks and secure internal network assets, the following safeguards were put in place:
+* **Firewall Rate Limiting:** Implemented strict firewall rules to restrict the rate of incoming ICMP packets allowed per second, dropping excess packets automatically.
+* **Source IP Verification:** Enabled ingress filtering and anti-spoofing checks (Unicast Reverse Path Forwarding) on perimeter devices to verify incoming IP addresses.
+* **Intrusion Detection & Prevention System (IDS/IPS):** Deployed inline IPS rules to continuously analyze ICMP traffic and block packets with abnormal or suspicious characteristics.
+* **Routine Security Audits:** Established mandatory quarterly audits of all perimeter firewall access control lists (ACLs) and network device configurations.
+
+---
+
+### 3. Detect
+To enhance threat visibility and improve detection speed for future traffic anomalies:
+* **Network Traffic Monitoring:** Installed automated network monitoring software configured to generate real-time alerts whenever network traffic exceeds baseline bandwidth or packet-volume thresholds.
+* **Traffic Baseline Analysis:** Established baseline metrics for normal network usage to quickly identify abnormal spikes in inbound UDP, TCP, or ICMP traffic.
+* **Centralized Log Management:** Directed firewall and system activity logs into a centralized logging system to monitor for incoming traffic anomalies and unauthorized entry attempts in real time.
+
+---
+
+### 4. Respond
+
+#### Immediate Incident Response (Current Event)
+During this incident, the security team responded by:
+1. Blocking all incoming ICMP packets at the perimeter firewall.
+2. Taking non-critical network services offline to free up hardware resources (CPU and RAM).
+3. Restoring critical operational services once network traffic stabilized.
+
+#### Standardized Response Plan for Future Incidents
+To manage and contain future cybersecurity incidents effectively, the security team will execute the following four-phase protocol:
+
+1. **Containment:** Immediately isolate impacted network segments, host machines, or IP addresses at the perimeter firewall or switch level to stop threat propagation without taking the entire enterprise network offline.
+2. **Neutralization:** Temporarily disable vulnerable ports or non-essential services. Identify the origin of the attack and block attacker IP blocks or malicious signatures at the perimeter router or Cloud WAF level.
+3. **Evidence Collection & Forensic Analysis:** Preserve firewall logs, packet captures (`.pcap`), and system event logs (`syslog` / SIEM records) to perform technical root-cause analysis and trace the attack vector.
+4. **Post-Incident Review (Lessons Learned):** Conduct a mandatory debrief with the cybersecurity team within 48 hours of an incident to evaluate the effectiveness of the response, update incident response playbooks, and refine monitoring alerts.
+
+---
+
+### 5. Recover
+
+#### Immediate Recovery (Current Event)
+System recovery was achieved by systematically verifying firewall rules, confirming the cessation of ICMP packet floods, and bringing critical internal servers back online before resuming standard business operations.
+
+#### Comprehensive Recovery Plan for Future Incidents
+To ensure smooth business continuity and minimize operational downtime during future security incidents, the organization will implement the following structured recovery framework:
+
+1. **Prioritized System Restoration Strategy:** 
+   * **Phase 1 (Critical Infrastructure):** Restore core network connectivity, DNS, identity and access services (Active Directory / LDAP), and primary databases first.
+   * **Phase 2 (Business-Critical Applications):** Bring primary customer-facing websites, internal communication tools, and sales platforms back online after verifying network stability.
+   * **Phase 3 (Non-Essential Services):** Restore secondary tools, file archives, and non-critical internal web servers last.
+2. **System Health & Integrity Verification:** Perform thorough connectivity and security checks—including bandwidth stress tests and system health checks—prior to returning systems to production status.
+3. **Data Integrity Checks:** Verify that backup data was not modified or corrupted during the security event, ensuring all database records match pre-incident states.
+4. **Stakeholder & Executive Communication:** Publish a standardized Incident Resolution Summary report for executive leadership, team managers, and affected clients detailing:
+   * Total system downtime duration.
+   * Root cause of the incident.
+   * Corrective measures taken to permanently resolve the issue.
