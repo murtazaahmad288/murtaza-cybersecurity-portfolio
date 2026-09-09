@@ -116,3 +116,60 @@ The capture of ICMP Type 3 / Code 3 (`Destination Unreachable - Port Unreachable
 - [ ] **3. Validate Firewall Rules:** Check active host rules (`sudo iptables -L -n -v`) to confirm UDP port 53 is open to incoming requests.
 - [ ] **4. Test Resolution:** Perform verification testing using `dig @203.0.113.2 www.yummyrecipesforme.com` to confirm A record query resolution.
 ---------------------------------------------------------------------------------------------------------------------------
+
+# Security Risk Assessment Report: Network Hardening & Vulnerability Remediation
+
+## Project Description
+This project is a comprehensive security risk assessment conducted for a social media organization following a major data breach that exposed customer personally identifiable information (PII). As a Security Analyst, I audited the internal infrastructure, identified four critical security vulnerabilities, analyzed the associated risks, and established a standardized network hardening roadmap to protect the organization from future unauthorized access and breaches.
+
+---
+
+## Part 1: Vulnerability Assessment & Risk Analysis
+
+The security audit revealed four major vulnerabilities within the organization's network infrastructure:
+
+### 1. Employees Sharing Passwords
+* **Risk Level:** High
+* **Threat & Impact:** Sharing credentials destroys individual accountability and non-repudiation. If a compromised account performs unauthorized actions, security logs cannot trace the activity back to a specific individual. Shared credentials also increase the likelihood of password leaks through unencrypted channels (chat applications, sticky notes, plain text files).
+
+### 2. Default Database Admin Password
+* **Risk Level:** Critical
+* **Threat & Impact:** Default passwords for common database systems (such as MySQL or PostgreSQL) are publicly documented in manufacturer manuals and easily accessible to attackers. Automated scanning scripts routinely scan internet-facing and internal networks for default credentials to gain full administrative access to sensitive customer databases.
+
+### 3. Lack of Firewall Filtering Rules
+* **Risk Level:** Critical
+* **Threat & Impact:** Without inbound and outbound packet filtering rules, the firewall acts as an open gateway. Untrusted traffic from the internet can enter the internal network freely, and malicious actors or compromised internal hosts can communicate with external command-and-control (C2) servers without restriction.
+
+### 4. Absence of Multi-Factor Authentication (MFA)
+* **Risk Level:** High
+* **Threat & Impact:** Relying solely on single-factor authentication (passwords) leaves the organization highly vulnerable to credential harvesting, phishing, brute-force attacks, and credential stuffing. Once a password is compromised, the attacker gains immediate access to systems.
+
+---
+
+## Part 2: Security Hardening Recommendations & Justification
+
+To address these vulnerabilities and establish baseline security practices, the following remediation measures must be implemented.
+
+| Vulnerability | Recommended Hardening Practice | Implementation Frequency |
+| :--- | :--- | :--- |
+| **Shared Passwords** | Password Manager & Unique Account Policy | One-time setup / Continuous compliance |
+| **Default Database Password** | Immediate Credential Rotation & Password Complexity Rules | One-time change / 90-day updates |
+| **Missing Firewall Rules** | Configure Inbound & Outbound Access Control Lists (ACLs) | One-time setup / Quarterly audits |
+| **Missing MFA** | Mandatory Multi-Factor Authentication Deployment | Continuous enforcement |
+
+---
+
+### Hardening Practice Explanations
+
+#### 1. Implement Multi-Factor Authentication (MFA) & Password Management
+* **Effectiveness:** MFA adds a secondary verification step (such as a time-based authenticator code or hardware security token) that an attacker cannot replicate with a stolen password alone. Combined with unique user accounts managed through an enterprise password manager, employees no longer need to share credentials or reuse simple passwords.
+* **Frequency:** **Continuous.** MFA must be strictly required for every user login attempt across all corporate applications, VPNs, and administrative portals.
+
+#### 2. Rotate Default Credentials & Implement Complexity Standards
+* **Effectiveness:** Changing default database passwords to unique, high-entropy passphrases neutralizes automated password-guessing tools and default credential databases. Enforcing strict database access controls ensures that only authorized application service accounts can query customer databases.
+* **Frequency:** **Immediate one-time remediation**, followed by mandatory password rotation every **90 to 180 days** or whenever administrative personnel change roles.
+
+#### 3. Establish Stateful Firewall Rules & Default-Deny Policies
+* **Effectiveness:** Configuring firewall Access Control Lists (ACLs) with an explicit "Default Deny" posture ensures that all inbound and outbound traffic is blocked unless explicitly permitted by business requirements. Inspecting traffic at the perimeter prevents unauthorized external connections and stops infected internal machines from exfiltrating customer data.
+* **Frequency:** **Initial setup with regular quarterly reviews.** Firewall rule sets must be audited quarterly to eliminate stale rules and update configurations as network requirements evolve.
+___________________________________________________________________________________________________________________________
