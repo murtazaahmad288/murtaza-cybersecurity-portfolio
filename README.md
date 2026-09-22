@@ -250,3 +250,434 @@ To ensure smooth business continuity and minimize operational downtime during fu
    * Total system downtime duration.
    * Root cause of the incident.
    * Corrective measures taken to permanently resolve the issue.
+---------------------------------------------------------------------------------------
+
+# Linux File Permissions Management
+
+## 📌 Project Overview
+
+This project demonstrates my practical experience using Linux commands to examine and manage file and directory permissions.
+
+As part of a cybersecurity scenario, I worked as a security professional responsible for ensuring that users have only the permissions they are authorized to have. I used Linux commands such as `ls -la` and `chmod` to inspect and modify permissions, including permissions for hidden files and directories.
+
+---
+
+## 🎯 Objectives
+
+The main objectives of this project were to:
+
+* Examine existing file and directory permissions.
+* Understand Linux's 10-character permission string.
+* Identify unauthorized access.
+* Modify file permissions using `chmod`.
+* Manage permissions for hidden files.
+* Restrict access to a sensitive directory.
+* Apply the principle of least privilege.
+
+---
+
+## 🛠️ Tools and Technologies
+
+* **Operating System:** Linux
+* **Command Line:** Linux Terminal
+* **Commands:** `ls -la`, `chmod`
+* **Security Concepts:** File permissions, authorization, access control, least privilege
+
+---
+
+# 1. Checking File and Directory Permissions
+
+## Command
+
+```bash
+ls -la
+```
+
+### Explanation
+
+The `ls -la` command displays detailed information about files and directories.
+
+* `ls` → lists files and directories
+* `-l` → displays detailed information, including permissions
+* `-a` → displays all files, including hidden files
+
+Hidden files in Linux usually begin with a `.` character.
+
+For example:
+
+```text
+-rw-r----- project1.txt
+-r--r----- .project_x.txt
+drwx------ drafts
+```
+
+### Screenshot
+
+> Add your lab screenshot here.
+
+![Linux ls -la command](screenshots/ls-la-permissions.png)
+
+---
+
+# 2. Understanding the Linux Permission String
+
+Linux uses a **10-character string** to represent file or directory permissions.
+
+Example:
+
+```text
+-rw-r-----
+```
+
+The structure is:
+
+```text
+- rw- r-- ---
+│ │   │   │
+│ │   │   └── Others
+│ │   └────── Group
+│ └────────── Owner
+└──────────── File type
+```
+
+### Permission Breakdown
+
+| Position      | Meaning             |
+| ------------- | ------------------- |
+| 1st character | File type           |
+| 2nd–4th       | Owner permissions   |
+| 5th–7th       | Group permissions   |
+| 8th–10th      | Others' permissions |
+
+### Permission Symbols
+
+| Symbol | Meaning                |
+| ------ | ---------------------- |
+| `r`    | Read                   |
+| `w`    | Write                  |
+| `x`    | Execute                |
+| `-`    | Permission not granted |
+
+For example:
+
+```text
+-rw-r-----
+```
+
+means:
+
+* `-` → regular file
+* `rw-` → owner can read and write
+* `r--` → group can read
+* `---` → others have no permissions
+
+---
+
+# 3. Removing Unauthorized Write Permission
+
+The organization does not allow **others** to have write access to files.
+
+After examining the permissions, I identified the file that had unauthorized write permission.
+
+## Command
+
+```bash
+chmod o-w <filename>
+```
+
+For example:
+
+```bash
+chmod o-w project1.txt
+```
+
+### Explanation
+
+The `chmod` command is used to change file or directory permissions.
+
+The command can be understood as:
+
+```text
+chmod   o   -w   filename
+        │    │
+        │    └── Remove write permission
+        └─────── Others
+```
+
+Therefore:
+
+```bash
+chmod o-w project1.txt
+```
+
+removes write permission from **others** while leaving the other permissions unchanged.
+
+### Verify the Permission
+
+```bash
+ls -la
+```
+
+### Screenshot
+
+> Add your actual lab screenshot here.
+
+![Changing file permissions](screenshots/chmod-file.png)
+
+---
+
+# 4. Managing Permissions for a Hidden File
+
+The research team has an archived hidden file named:
+
+```text
+.project_x.txt
+```
+
+The file should:
+
+* Allow the owner to read it.
+* Allow the group to read it.
+* Prevent writing.
+* Prevent access by others.
+
+The required permission is:
+
+```text
+-r--r-----
+```
+
+## Command
+
+```bash
+chmod 440 .project_x.txt
+```
+
+### Explanation
+
+The number `440` represents:
+
+```text
+4 4 0
+│ │ │
+│ │ └── Others: no permissions
+│ └──── Group: read
+└────── Owner: read
+```
+
+Linux permission values are:
+
+| Number | Permission    |
+| -----: | ------------- |
+|    `4` | Read          |
+|    `2` | Write         |
+|    `1` | Execute       |
+|    `0` | No permission |
+
+Therefore:
+
+```bash
+chmod 440 .project_x.txt
+```
+
+sets the file permissions to:
+
+```text
+-r--r-----
+```
+
+### Verify the Hidden File
+
+```bash
+ls -la
+```
+
+The `-a` option is important because `.project_x.txt` is a hidden file.
+
+### Screenshot
+
+> Add your actual lab screenshot here.
+
+![Hidden file permissions](screenshots/hidden-file.png)
+
+---
+
+# 5. Restricting the Drafts Directory
+
+The `drafts` directory contains research information and should only be accessible by the `researcher2` user.
+
+## Command
+
+```bash
+chmod 700 drafts
+```
+
+### Explanation
+
+The permission value `700` means:
+
+```text
+7 0 0
+│ │ │
+│ │ └── Others: no permissions
+│ └──── Group: no permissions
+└────── Owner: read, write, execute
+```
+
+Therefore, the resulting permission is:
+
+```text
+drwx------
+```
+
+This means only the owner can access and manage the directory.
+
+### Why Execute Permission Matters
+
+For directories, the `x` permission allows a user to access/enter the directory.
+
+Therefore:
+
+```text
+rwx
+```
+
+allows the owner to:
+
+* Read directory contents
+* Create or modify files
+* Access the directory
+
+### Verify
+
+```bash
+ls -la
+```
+
+Expected permission format:
+
+```text
+drwx------ drafts
+```
+
+### Screenshot
+
+> Add your actual lab screenshot here.
+
+![Drafts directory permissions](screenshots/drafts-permissions.png)
+
+---
+
+# 🔐 Security Concepts Demonstrated
+
+## Principle of Least Privilege
+
+This project demonstrates the **principle of least privilege**, which means users should receive only the permissions they need to perform their authorized tasks.
+
+For example, restricting the `drafts` directory with:
+
+```bash
+chmod 700 drafts
+```
+
+prevents unauthorized users and groups from accessing it.
+
+---
+
+## Access Control
+
+Linux file permissions provide a basic form of access control by separating permissions into three categories:
+
+1. **Owner**
+2. **Group**
+3. **Others**
+
+This allows administrators and security professionals to control who can read, modify, or execute files.
+
+---
+
+## Hidden Files
+
+Linux hidden files usually begin with a period (`.`).
+
+Example:
+
+```text
+.project_x.txt
+```
+
+The command:
+
+```bash
+ls -la
+```
+
+displays hidden files, while:
+
+```bash
+ls -l
+```
+
+normally does not display them.
+
+---
+
+# 📋 Commands Used
+
+| Command                    | Purpose                                                   |
+| -------------------------- | --------------------------------------------------------- |
+| `ls -la`                   | Display files, directories, permissions, and hidden files |
+| `chmod o-w filename`       | Remove write permission from others                       |
+| `chmod 440 .project_x.txt` | Give owner and group read-only access                     |
+| `chmod 700 drafts`         | Give only the owner full access to the directory          |
+
+---
+
+# 🧠 What I Learned
+
+Through this project, I learned how Linux permissions control access to files and directories. I practiced interpreting the 10-character permission string and modifying permissions with `chmod`.
+
+I also learned how hidden files are handled in Linux and why commands such as `ls -la` are important when performing security-related permission audits.
+
+---
+
+# 📝 Project Summary
+
+In this project, I examined and managed Linux file and directory permissions in a research environment. I used `ls -la` to identify existing permissions and hidden files, and I used `chmod` to remove unauthorized access and apply appropriate permissions.
+
+I also secured the `.project_x.txt` file and restricted the `drafts` directory so that only the authorized user could access it. These tasks demonstrate practical knowledge of Linux access control, authorization, file permissions, and the principle of least privilege.
+
+---
+
+# 💼 Cybersecurity Skills Demonstrated
+
+* Linux command-line usage
+* File permission management
+* Directory permission management
+* Access control
+* Authorization
+* Principle of least privilege
+* Security auditing
+* Hidden file management
+* Linux `chmod`
+* Linux `ls -la`
+* Basic system security
+
+---
+
+## 📸 Evidence
+
+The following screenshots document the commands and results from the Linux lab:
+
+1. `ls -la` — Checking existing permissions
+2. `chmod o-w` — Removing unauthorized write access
+3. `chmod 440 .project_x.txt` — Securing the hidden file
+4. `chmod 700 drafts` — Restricting the drafts directory
+
+---
+
+## 👨‍💻 Portfolio Note
+
+This project was completed as part of my cybersecurity learning and demonstrates hands-on practice with Linux file permissions and access control.
+
+**Focus Area:** Cybersecurity | Linux | Access Control | System Security
