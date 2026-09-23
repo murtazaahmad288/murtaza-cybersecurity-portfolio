@@ -311,11 +311,7 @@ For example:
 drwx------ drafts
 ```
 
-### Screenshot
 
-> Add your lab screenshot here.
-
-![Linux ls -la command](screenshots/ls-la-permissions.png)
 
 ---
 
@@ -418,11 +414,7 @@ removes write permission from **others** while leaving the other permissions unc
 ls -la
 ```
 
-### Screenshot
 
-> Add your actual lab screenshot here.
-
-![Changing file permissions](screenshots/chmod-file.png)
 
 ---
 
@@ -494,11 +486,7 @@ ls -la
 
 The `-a` option is important because `.project_x.txt` is a hidden file.
 
-### Screenshot
 
-> Add your actual lab screenshot here.
-
-![Hidden file permissions](screenshots/hidden-file.png)
 
 ---
 
@@ -560,11 +548,7 @@ Expected permission format:
 drwx------ drafts
 ```
 
-### Screenshot
 
-> Add your actual lab screenshot here.
-
-![Drafts directory permissions](screenshots/drafts-permissions.png)
 
 ---
 
@@ -665,14 +649,7 @@ I also secured the `.project_x.txt` file and restricted the `drafts` directory s
 
 ---
 
-## 📸 Evidence
 
-The following screenshots document the commands and results from the Linux lab:
-
-1. `ls -la` — Checking existing permissions
-2. `chmod o-w` — Removing unauthorized write access
-3. `chmod 440 .project_x.txt` — Securing the hidden file
-4. `chmod 700 drafts` — Restricting the drafts directory
 
 ---
 
@@ -681,3 +658,458 @@ The following screenshots document the commands and results from the Linux lab:
 This project was completed as part of my cybersecurity learning and demonstrates hands-on practice with Linux file permissions and access control.
 
 **Focus Area:** Cybersecurity | Linux | Access Control | System Security
+----------------------------------------------------------------------------------------------------------------------------
+
+
+# SQL Filtering for Security Investigations
+
+## 📌 Project Overview
+
+This project demonstrates my practical experience using SQL filters to investigate potential security issues in an organization's data.
+
+As a security professional, I used SQL queries to analyze login attempts and employee information. I applied `AND`, `OR`, and `NOT` operators, along with `LIKE`, to filter records based on specific security requirements. The investigation focused on identifying suspicious login activity and locating employees whose machines required security updates.
+
+---
+
+## 🎯 Objectives
+
+The main objectives of this project were to:
+
+* Investigate failed login attempts after business hours.
+* Identify login attempts on specific dates.
+* Identify login attempts that occurred outside Mexico.
+* Find Marketing employees located in the East building.
+* Find employees in the Sales or Finance departments.
+* Identify employees who are not in the Information Technology department.
+* Practice using SQL filtering for cybersecurity investigations.
+
+---
+
+## 🛠️ Tools and Technologies
+
+* **Database:** SQL
+* **Tables:** `log_in_attempts`, `employees`
+* **SQL concepts:** `WHERE`, `AND`, `OR`, `NOT`, `LIKE`
+* **Security concepts:** Security investigation, login monitoring, filtering, employee machine updates
+
+---
+
+# 1. Retrieve After-Hours Failed Login Attempts
+
+## Scenario
+
+A potential security incident occurred after business hours. I needed to identify failed login attempts that occurred after 18:00.
+
+The `login_time` column contains the login time, while the `success` column contains `0` for failed login attempts.
+
+## SQL Query
+
+```sql
+SELECT *
+FROM log_in_attempts
+WHERE login_time > '18:00'
+AND success = 0;
+```
+
+## Explanation
+
+This query filters the `log_in_attempts` table using two conditions.
+
+```sql
+login_time > '18:00'
+```
+
+selects login attempts that occurred after 18:00.
+
+```sql
+success = 0
+```
+
+selects failed login attempts.
+
+The `AND` operator requires **both conditions** to be true.
+
+Therefore, the query returns failed login attempts that occurred after business hours.
+
+
+
+---
+
+# 2. Retrieve Login Attempts on Specific Dates
+
+## Scenario
+
+A suspicious event occurred on **2022-05-09**. I needed to investigate login attempts from that day and the previous day, **2022-05-08**.
+
+## SQL Query
+
+```sql
+SELECT *
+FROM log_in_attempts
+WHERE login_date = '2022-05-09'
+OR login_date = '2022-05-08';
+```
+
+## Explanation
+
+The query filters the `login_date` column for two specific dates.
+
+The `OR` operator means that a record only needs to match **one of the conditions**.
+
+The query therefore returns login attempts from:
+
+* May 9, 2022
+* May 8, 2022
+
+
+
+---
+
+# 3. Retrieve Login Attempts Outside Mexico
+
+## Scenario
+
+The security team determined that the suspicious activity did not originate in Mexico. I needed to identify login attempts that occurred outside Mexico.
+
+The `country` column contains both `MEX` and `MEXICO`, so the `LIKE` keyword and `%` wildcard are used to account for both values.
+
+## SQL Query
+
+```sql
+SELECT *
+FROM log_in_attempts
+WHERE country NOT LIKE '%MEX%';
+```
+
+## Explanation
+
+The `LIKE` keyword searches for a pattern.
+
+The `%` wildcard represents any number of characters.
+
+```sql
+'%MEX%'
+```
+
+matches values containing `MEX`, including:
+
+```text
+MEX
+MEXICO
+```
+
+The `NOT` operator reverses the condition.
+
+Therefore:
+
+```sql
+country NOT LIKE '%MEX%'
+```
+
+returns login attempts where the country does **not** contain `MEX`.
+
+
+
+---
+
+# 4. Retrieve Employees in Marketing
+
+## Scenario
+
+The security team needs to perform security updates on employee machines in the Marketing department. I needed to identify Marketing employees whose offices are located in the East building.
+
+The `department` column identifies the employee's department, while the `office` column identifies the office location. East building offices contain values such as `East-170` and `East-320`.
+
+## SQL Query
+
+```sql
+SELECT *
+FROM employees
+WHERE department LIKE '%Marketing%'
+AND office LIKE 'East%';
+```
+
+## Explanation
+
+The query uses two conditions.
+
+```sql
+department LIKE '%Marketing%'
+```
+
+finds employees whose department contains `Marketing`.
+
+```sql
+office LIKE 'East%'
+```
+
+finds offices beginning with `East`.
+
+The `%` wildcard allows additional characters after `East`.
+
+The `AND` operator requires both conditions to be true.
+
+Therefore, the query identifies employees in the Marketing department who work in the East building.
+
+
+---
+
+# 5. Retrieve Employees in Finance or Sales
+
+## Scenario
+
+The security team needs to perform another update on machines belonging to employees in the Sales and Finance departments.
+
+## SQL Query
+
+```sql
+SELECT *
+FROM employees
+WHERE department = 'Sales'
+OR department = 'Finance';
+```
+
+## Explanation
+
+The query checks the `department` column for two possible values.
+
+```sql
+department = 'Sales'
+```
+
+or:
+
+```sql
+department = 'Finance'
+```
+
+The `OR` operator means that either condition can be true.
+
+Therefore, the query returns employees who work in either the **Sales** or **Finance** department.
+
+
+
+
+---
+
+# 6. Retrieve Employees Not in IT
+
+## Scenario
+
+Employees in the Information Technology department have already received the required update. I needed to identify employees in all other departments.
+
+## SQL Query
+
+```sql
+SELECT *
+FROM employees
+WHERE department NOT LIKE '%Information Technology%';
+```
+
+## Explanation
+
+The query searches the `department` column.
+
+```sql
+LIKE '%Information Technology%'
+```
+
+would identify departments containing `Information Technology`.
+
+Adding `NOT` reverses the condition:
+
+```sql
+NOT LIKE '%Information Technology%'
+```
+
+Therefore, the query returns employees who are **not** in the Information Technology department.
+
+
+
+
+
+---
+
+# 🔎 SQL Concepts Demonstrated
+
+## WHERE
+
+The `WHERE` clause filters records based on specified conditions.
+
+Example:
+
+```sql
+SELECT *
+FROM employees
+WHERE department = 'Finance';
+```
+
+---
+
+## AND
+
+`AND` is used when **all specified conditions must be true**.
+
+Example:
+
+```sql
+WHERE department LIKE '%Marketing%'
+AND office LIKE 'East%';
+```
+
+This requires the employee to satisfy both conditions.
+
+---
+
+## OR
+
+`OR` is used when **at least one condition can be true**.
+
+Example:
+
+```sql
+WHERE department = 'Sales'
+OR department = 'Finance';
+```
+
+This returns employees from either department.
+
+---
+
+## NOT
+
+`NOT` reverses a condition.
+
+Example:
+
+```sql
+WHERE department NOT LIKE '%Information Technology%';
+```
+
+This excludes employees whose department contains `Information Technology`.
+
+---
+
+## LIKE
+
+`LIKE` is used to search for patterns in text.
+
+Example:
+
+```sql
+WHERE country LIKE '%MEX%';
+```
+
+The `%` wildcard represents zero or more characters.
+
+For example:
+
+```text
+MEX
+MEXICO
+```
+
+can both match:
+
+```sql
+'%MEX%'
+```
+
+---
+
+# 📅 Filtering Dates and Times
+
+SQL can also filter records using dates and times.
+
+### Date example
+
+```sql
+WHERE login_date = '2022-05-09'
+```
+
+### Time example
+
+```sql
+WHERE login_time > '18:00'
+```
+
+Combining conditions:
+
+```sql
+WHERE login_time > '18:00'
+AND success = 0;
+```
+
+This allows security professionals to investigate activity during specific time periods.
+
+---
+
+# 🔐 Cybersecurity Applications
+
+SQL filtering is useful in cybersecurity because security professionals often need to investigate large amounts of data.
+
+Examples include:
+
+* Investigating failed login attempts
+* Identifying suspicious login activity
+* Filtering activity by date and time
+* Investigating activity from specific countries
+* Finding employees affected by security updates
+* Identifying systems or users that require additional security controls
+
+---
+
+# 🧠 What I Learned
+
+Through this project, I learned how SQL filtering can be applied to cybersecurity investigations. I practiced using `WHERE`, `AND`, `OR`, `NOT`, and `LIKE` to retrieve specific records from database tables.
+
+I also learned how SQL can be used to investigate login activity by filtering dates, times, countries, and login status. These skills are useful for analyzing security-related data and identifying records that require further investigation.
+
+---
+
+# 📋 Queries Used
+
+| Investigation                        | SQL Technique  |
+| ------------------------------------ | -------------- |
+| Failed logins after 18:00            | `AND`          |
+| Login attempts on May 8 or May 9     | `OR`           |
+| Login attempts outside Mexico        | `NOT` + `LIKE` |
+| Marketing employees in East building | `AND` + `LIKE` |
+| Sales or Finance employees           | `OR`           |
+| Employees outside IT                 | `NOT` + `LIKE` |
+
+---
+
+# 📊 Project Summary
+
+In this project, I used SQL filters to investigate potential security issues involving login attempts and employee information. I analyzed after-hours failed logins, login activity on specific dates, activity outside Mexico, and employee records based on departments and office locations.
+
+By using `AND`, `OR`, `NOT`, and `LIKE`, I was able to create targeted queries for different security investigations. This project demonstrates my ability to use SQL to filter and analyze security-related data.
+
+---
+
+# 💼 Cybersecurity Skills Demonstrated
+
+* SQL querying
+* SQL filtering
+* Security investigation
+* Login activity analysis
+* Date and time filtering
+* Pattern matching with `LIKE`
+* Using `AND` and `OR`
+* Using `NOT`
+* Database analysis
+* Employee data filtering
+* Security data investigation
+
+---
+
+
+
+---
+
+## 👨‍💻 Portfolio Note
+
+This project was completed as part of my cybersecurity learning and demonstrates practical experience using SQL to investigate security-related data.
+
+**Focus Area:** Cybersecurity | SQL | Security Analysis | Database Filtering
